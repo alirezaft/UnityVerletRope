@@ -8,10 +8,7 @@ public struct VerletNode
 {
     public Vector3 Position;
     public Vector3 PrevoiusPosition;
-    public Vector3 Velocity;
-    public float NodeMass;
 }
-
 
 public class VerletRope : MonoBehaviour
 {
@@ -36,7 +33,6 @@ public class VerletRope : MonoBehaviour
         {
             m_VerletNodes[i].Position = transform.position - new Vector3(0f, (m_DistanceBetweenNodes * i), 0f);
             m_VerletNodes[i].PrevoiusPosition = m_VerletNodes[i].Position;
-            m_VerletNodes[i].NodeMass = m_RopeMass / m_VerletNodes.Length;
         }
     }
 
