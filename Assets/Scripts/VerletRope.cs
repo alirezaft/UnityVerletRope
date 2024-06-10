@@ -153,7 +153,6 @@ public class VerletRope : MonoBehaviour
                     Physics.Raycast(ray, out rhit, Vector3.Distance(closestPoint, m_VerletNodes[i].Position));
 
                     var hitNormal = rhit.normal;
-                    Debug.Log(hitNormal);
                     m_VerletNodes[i].Position = closestPoint + hitNormal * m_RopeRadius;
 
                 }
