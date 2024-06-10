@@ -31,6 +31,8 @@ public class VerletRope : MonoBehaviour
     [SerializeField] private float m_ConstraintIterationCount;
     [SerializeField] private Vector3 m_Gravity;
 
+    [SerializeField] private float m_InsideClosestPointSamplingIteration;
+
     private float m_DistanceBetweenNodes;
 
     [SerializeField] private float m_RopeRadius;
@@ -114,9 +116,8 @@ public class VerletRope : MonoBehaviour
     {
         // Dictionary<VerletNode, Collider[]> collisionsOfEachNode = new Dictionary<VerletNode, Collider[]>();
 
-        for(int i = 0; i < m_VerletNodes.Length; i++)
+        for (int i = 0; i < m_VerletNodes.Length; i++)
         {
-            // Collider[] colliders = new Collider[1];
             var colliders = Physics.OverlapSphere(m_VerletNodes[i].Position, m_RopeRadius);
 
             if (colliders.Length == 0)
@@ -128,17 +129,33 @@ public class VerletRope : MonoBehaviour
             foreach (var col in colliders)
             {
                 var closestPoint = col.ClosestPoint(m_VerletNodes[i].Position);
-                var isInside = closestPoint.Equals(m_VerletNodes[i].Position);
-                
+                var isInside = Vector3.Distance(closestPoint, col.transform.position) >=
+                               Vector3.Distance(m_VerletNodes[i].Position, col.transform.position);
+
                 if (isInside)
                 {
-                    m_VerletNodes[i].Position += (closestPoint - m_VerletNodes[i].Position);
-                    m_VerletNodes[i].Position += ((-closestPoint + m_VerletNodes[i].Position).normalized * m_RopeRadius);
+                    var direction = m_VerletNodes[i].PrevoiusPosition - m_VerletNodes[i].Position;
+                    Debug.Log("IN!!!");
+                    Collider[] cols = new Collider[1];
+
+                    do
+                    {
+                        m_VerletNodes[i].Position = m_VerletNodes[i].PrevoiusPosition +
+                                                    (m_VerletNodes[i].PrevoiusPosition - m_VerletNodes[i].Position);
+                        Physics.OverlapSphereNonAlloc(m_VerletNodes[i].Position, direction.magnitude, cols);
+                        Debug.Log(cols[0]);
+                    } while (cols[0] is null);
                 }
                 else
                 {
-                    Debug.Log("node: " + m_VerletNodes[i].Position + "point: " + closestPoint);
-                    m_VerletNodes[i].Position += (-closestPoint + m_VerletNodes[i].Position).normalized * m_RopeRadius;
+                    RaycastHit rhit;
+                    Ray ray = new Ray(m_VerletNodes[i].Position, closestPoint - m_VerletNodes[i].Position);
+                    Physics.Raycast(ray, out rhit, Vector3.Distance(closestPoint, m_VerletNodes[i].Position));
+
+                    var hitNormal = rhit.normal;
+                    Debug.Log(hitNormal);
+                    m_VerletNodes[i].Position = closestPoint + hitNormal * m_RopeRadius;
+
                 }
             }
         }
