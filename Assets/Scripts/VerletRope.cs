@@ -1,10 +1,6 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using UnityEditor.Experimental.GraphView;
 using UnityEngine;
-using UnityEngine.Serialization;
-using UnityEngine.UIElements;
 
 public struct VerletNode
 {
@@ -16,11 +12,6 @@ public struct VerletNode
     {
         Accelertaion += accelaration;
     }
-
-    public void ZeroAcceleration()
-    {
-        Accelertaion = Vector3.zero;
-    }
 }
 
 public class VerletRope : MonoBehaviour
@@ -28,20 +19,23 @@ public class VerletRope : MonoBehaviour
     private VerletNode[] m_VerletNodes;
     [SerializeField] private float m_RopeLength;
     [SerializeField] private int m_NumberOfNodesPerLength;
-    [SerializeField] private float m_ConstraintIterationCount;
+    [SerializeField] private int m_ConstraintIterationCount;
     [SerializeField] private Vector3 m_Gravity;
 
-    [SerializeField] private float m_InsideClosestPointSamplingIteration;
 
     private float m_DistanceBetweenNodes;
 
     [SerializeField] private float m_RopeRadius;
+    private Vector3[] m_lookaheadSimulationResults;
+    private List<int> m_simulationIgnoreIndex;
+    [SerializeField] [Range(0f, 1f)] private float m_LowPassFilterCutoff;
 
     private void Awake()
     {
         m_VerletNodes = new VerletNode[(int)(m_NumberOfNodesPerLength * m_RopeLength)];
-        Debug.Log("Initializing Verlet rope with " + m_VerletNodes.Length + " nodes.");
         m_DistanceBetweenNodes = 1f / m_NumberOfNodesPerLength;
+        m_lookaheadSimulationResults = new Vector3[m_VerletNodes.Length];
+        m_simulationIgnoreIndex = new List<int>();
 
         for (int i = 0; i < m_VerletNodes.Length; i++)
         {
@@ -53,12 +47,13 @@ public class VerletRope : MonoBehaviour
     private void FixedUpdate()
     {
         CalculateNewPositions();
-        ApplyCollision();
-
 
         for (int i = 0; i < m_ConstraintIterationCount; i++)
         {
             FixNodeDistances();
+
+            if (i % 2 == 0)
+                ApplyCollision();
         }
     }
 
@@ -78,6 +73,12 @@ public class VerletRope : MonoBehaviour
                 Gizmos.color = Color.green;
                 Gizmos.DrawLine(m_VerletNodes[i].Position, m_VerletNodes[i + 1].Position);
             }
+
+            if (m_simulationIgnoreIndex.Contains(i))
+                Gizmos.color = Color.white;
+            else
+                Gizmos.color = Color.blue;
+            Gizmos.DrawLine(m_VerletNodes[i].Position, m_VerletNodes[i].PrevoiusPosition);
         }
     }
 
@@ -88,8 +89,26 @@ public class VerletRope : MonoBehaviour
             var currNode = m_VerletNodes[i];
             var newPreviousPosition = currNode.Position;
 
-            m_VerletNodes[i].Position = (2 * currNode.Position) - currNode.PrevoiusPosition +
-                                        ((m_Gravity) * (float)Math.Pow(Time.fixedDeltaTime, 2));
+            var newPosition = (2 * currNode.Position) - currNode.PrevoiusPosition +
+                              ((m_Gravity) * (float)Math.Pow(Time.fixedDeltaTime, 2));
+
+            var ray = new Ray(m_VerletNodes[i].Position, newPosition - m_VerletNodes[i].Position);
+            RaycastHit rhit;
+
+            if (Physics.Raycast(ray, out rhit, Vector3.Distance(m_VerletNodes[i].Position, newPosition) * 2))
+            {
+                Debug.Log($"IT'S IMSIDE!!!!!{i}, {Vector3.Distance(m_VerletNodes[i].Position, newPosition)}");
+
+                Debug.Log($"POS: {m_VerletNodes[i].Position}, ADJ POS: {rhit.point + rhit.normal * m_RopeRadius}");
+                m_VerletNodes[i].Position = Vector3.Lerp(m_VerletNodes[i].PrevoiusPosition,
+                    rhit.point + rhit.normal * m_RopeRadius, m_LowPassFilterCutoff);
+            }
+
+            else
+            {
+                m_VerletNodes[i].Position = newPosition;
+            }
+
             m_VerletNodes[i].PrevoiusPosition = newPreviousPosition;
         }
     }
@@ -114,48 +133,21 @@ public class VerletRope : MonoBehaviour
 
     private void ApplyCollision()
     {
-        // Dictionary<VerletNode, Collider[]> collisionsOfEachNode = new Dictionary<VerletNode, Collider[]>();
-
         for (int i = 0; i < m_VerletNodes.Length; i++)
         {
             var colliders = Physics.OverlapSphere(m_VerletNodes[i].Position, m_RopeRadius);
 
-            if (colliders.Length == 0)
-            {
-                m_VerletNodes[i].ZeroAcceleration();
-                continue;
-            }
-
             foreach (var col in colliders)
             {
                 var closestPoint = col.ClosestPoint(m_VerletNodes[i].Position);
-                var isInside = Vector3.Distance(closestPoint, col.transform.position) >=
-                               Vector3.Distance(m_VerletNodes[i].Position, col.transform.position);
+                
+                RaycastHit rhit;
 
-                if (isInside)
-                {
-                    var direction = m_VerletNodes[i].PrevoiusPosition - m_VerletNodes[i].Position;
-                    Debug.Log("IN!!!");
-                    Collider[] cols = new Collider[1];
+                Ray ray = new Ray(m_VerletNodes[i].Position, closestPoint - m_VerletNodes[i].Position);
+                Physics.Raycast(ray, out rhit, Vector3.Distance(closestPoint, m_VerletNodes[i].Position));
 
-                    do
-                    {
-                        m_VerletNodes[i].Position = m_VerletNodes[i].PrevoiusPosition +
-                                                    (m_VerletNodes[i].PrevoiusPosition - m_VerletNodes[i].Position);
-                        Physics.OverlapSphereNonAlloc(m_VerletNodes[i].Position, direction.magnitude, cols);
-                        Debug.Log(cols[0]);
-                    } while (cols[0] is null);
-                }
-                else
-                {
-                    RaycastHit rhit;
-                    Ray ray = new Ray(m_VerletNodes[i].Position, closestPoint - m_VerletNodes[i].Position);
-                    Physics.Raycast(ray, out rhit, Vector3.Distance(closestPoint, m_VerletNodes[i].Position));
-
-                    var hitNormal = rhit.normal;
-                    m_VerletNodes[i].Position = closestPoint + hitNormal * m_RopeRadius;
-
-                }
+                var hitNormal = rhit.normal;
+                m_VerletNodes[i].Position = closestPoint + hitNormal * m_RopeRadius;
             }
         }
     }
