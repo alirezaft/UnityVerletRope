@@ -108,12 +108,12 @@ public class RopeRenderer : MonoBehaviour
             var nexti = (i + 1) % m_RopeSegmentSides == 0 ? i - m_RopeSegmentSides + 1 : i + 1;
 
             m_Triangles[tn] = i;
-            m_Triangles[tn + 1] = i + m_RopeSegmentSides;
-            m_Triangles[tn + 2] = nexti + m_RopeSegmentSides;
+            m_Triangles[tn + 1] = nexti + m_RopeSegmentSides;
+            m_Triangles[tn + 2] = i + m_RopeSegmentSides;
 
             m_Triangles[tn + 3] = i;
-            m_Triangles[tn + 4] = nexti + m_RopeSegmentSides;
-            m_Triangles[tn + 5] = nexti;
+            m_Triangles[tn + 4] = nexti;
+            m_Triangles[tn + 5] = nexti + m_RopeSegmentSides;
 
             tn += 6;
         }
