@@ -1,5 +1,3 @@
-using System;
-using System.Collections.Generic;
 using UnityEngine;
 
 public struct VerletNode
@@ -17,9 +15,6 @@ public class VerletRope : MonoBehaviour
     [SerializeField] private Vector3 m_Gravity;
     private float m_DistanceBetweenNodes;
     [SerializeField] private float m_RopeRadius;
-    private Vector3[] m_lookaheadSimulationResults;
-    private List<int> m_simulationIgnoreIndex;
-    [SerializeField] [Range(0f, 1f)] private float m_LowPassFilterCutoff;
     [SerializeField] private int m_SubSteps = 4;
 
     private RopeRenderer m_RopeRenderer;
@@ -28,8 +23,6 @@ public class VerletRope : MonoBehaviour
     {
         m_VerletNodes = new VerletNode[(int)(m_NumberOfNodesPerLength * m_RopeLength)];
         m_DistanceBetweenNodes = 1f / m_NumberOfNodesPerLength;
-        m_lookaheadSimulationResults = new Vector3[m_VerletNodes.Length];
-        m_simulationIgnoreIndex = new List<int>();
 
         for (int i = 0; i < m_VerletNodes.Length; i++)
         {
