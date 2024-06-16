@@ -1,7 +1,7 @@
 # Rope Physics Using Verlet Integration in Unity
 ![Verlet Demo GIF](./SampleGIF.gif)
 ## What is Verlet Integration?
-[Verlet integration](https://en.wikipedia.org/wiki/Verlet_integration) is a numerical method used to calculate the trajectory of particles in molecular dynamics. But it's widely used in computer graphics and software simulations to simulate physical phenomenon and visual effects.
+[Verlet integration](https://en.wikipedia.org/wiki/Verlet_integration) is a numerical method used to calculate the trajectory of particles in molecular dynamics. But it's widely used in computer graphics and software simulations to simulate physical phenomena and visual effects.
 
 In each time step, it calculates the position of the particle in the next time step using current position, previous position and its accelaration. Then it applies constraints (if there's any) to maintain the right position of each particle.
 
