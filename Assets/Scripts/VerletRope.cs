@@ -59,26 +59,26 @@ public class VerletRope : MonoBehaviour
         m_RopeRenderer.RenderRope(m_VerletNodes, m_RopeRadius);
     }
 
-    private void OnDrawGizmos()
-    {
-        if (!Application.isPlaying)
-            return;
-    
-        for (int i = 0; i < m_VerletNodes.Length; i++)
-        {
-            if (i != m_VerletNodes.Length - 1)
-            {
-                Gizmos.color = Color.green;
-                Gizmos.DrawLine(m_VerletNodes[i].Position, m_VerletNodes[i + 1].Position);
-            }
-    
-            if (m_simulationIgnoreIndex.Contains(i))
-                Gizmos.color = Color.white;
-            else
-                Gizmos.color = Color.blue;
-            Gizmos.DrawLine(m_VerletNodes[i].Position, m_VerletNodes[i].PrevoiusPosition);
-        }
-    }
+    // private void OnDrawGizmos()
+    // {
+    //     if (!Application.isPlaying)
+    //         return;
+    //
+    //     for (int i = 0; i < m_VerletNodes.Length; i++)
+    //     {
+    //         if (i != m_VerletNodes.Length - 1)
+    //         {
+    //             Gizmos.color = Color.green;
+    //             Gizmos.DrawLine(m_VerletNodes[i].Position, m_VerletNodes[i + 1].Position);
+    //         }
+    //
+    //         if (m_simulationIgnoreIndex.Contains(i))
+    //             Gizmos.color = Color.white;
+    //         else
+    //             Gizmos.color = Color.blue;
+    //         Gizmos.DrawLine(m_VerletNodes[i].Position, m_VerletNodes[i].PrevoiusPosition);
+    //     }
+    // }
 
     private void CalculateNewPositions(float deltaTime)
     {
