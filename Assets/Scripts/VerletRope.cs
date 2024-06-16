@@ -20,7 +20,9 @@ public class VerletRope : MonoBehaviour
     private Vector3[] m_lookaheadSimulationResults;
     private List<int> m_simulationIgnoreIndex;
     [SerializeField] [Range(0f, 1f)] private float m_LowPassFilterCutoff;
-    [SerializeField] private int m_SubSteps = 4; // Number of sub-steps per frame for increased accuracy
+    [SerializeField] private int m_SubSteps = 4;
+
+    private RopeRenderer m_RopeRenderer;
 
     private void Awake()
     {
@@ -36,6 +38,11 @@ public class VerletRope : MonoBehaviour
         }
     }
 
+    private void Start()
+    {
+        m_RopeRenderer = GetComponent<RopeRenderer>();
+    }
+
     private void FixedUpdate()
     {
         for (int step = 0; step < m_SubSteps; step++)
@@ -48,24 +55,23 @@ public class VerletRope : MonoBehaviour
                     ApplyCollision();
             }
         }
+        
+        m_RopeRenderer.RenderRope(m_VerletNodes, m_RopeRadius);
     }
 
     private void OnDrawGizmos()
     {
         if (!Application.isPlaying)
             return;
-
+    
         for (int i = 0; i < m_VerletNodes.Length; i++)
         {
-            Gizmos.color = Color.red;
-            Gizmos.DrawSphere(m_VerletNodes[i].Position, m_RopeRadius);
-
             if (i != m_VerletNodes.Length - 1)
             {
                 Gizmos.color = Color.green;
                 Gizmos.DrawLine(m_VerletNodes[i].Position, m_VerletNodes[i + 1].Position);
             }
-
+    
             if (m_simulationIgnoreIndex.Contains(i))
                 Gizmos.color = Color.white;
             else
@@ -141,8 +147,13 @@ public class VerletRope : MonoBehaviour
                 Vector3 penetrationNormal = (node.Position - closestPoint).normalized;
                 float penetrationDepth = m_RopeRadius - distance;
 
-                node.Position += penetrationNormal * penetrationDepth * 1.01f; // Small factor to ensure it's out of collider
+                node.Position += penetrationNormal * penetrationDepth * 1.01f;
             }
         }
+    }
+
+    public int GetNodeCount()
+    {
+        return m_VerletNodes.Length;
     }
 }
