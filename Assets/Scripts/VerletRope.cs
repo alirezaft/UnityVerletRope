@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Serialization;
 
 public struct VerletNode
 {
@@ -10,7 +11,7 @@ public class VerletRope : MonoBehaviour
 {
     private VerletNode[] m_VerletNodes;
     [SerializeField] private float m_RopeLength;
-    [SerializeField] private int m_NumberOfNodesPerLength;
+    [SerializeField] private int m_NumberOfNodes;
     [SerializeField] private int m_ConstraintIterationCount;
     [SerializeField] private Vector3 m_Gravity;
     private float m_DistanceBetweenNodes;
@@ -21,8 +22,8 @@ public class VerletRope : MonoBehaviour
 
     private void Awake()
     {
-        m_VerletNodes = new VerletNode[(int)(m_NumberOfNodesPerLength * m_RopeLength)];
-        m_DistanceBetweenNodes = 1f / m_NumberOfNodesPerLength;
+        m_VerletNodes = new VerletNode[(int)(m_NumberOfNodes)];
+        m_DistanceBetweenNodes = m_RopeLength / m_NumberOfNodes;
 
         for (int i = 0; i < m_VerletNodes.Length; i++)
         {
@@ -64,11 +65,8 @@ public class VerletRope : MonoBehaviour
     //             Gizmos.color = Color.green;
     //             Gizmos.DrawLine(m_VerletNodes[i].Position, m_VerletNodes[i + 1].Position);
     //         }
-    //
-    //         if (m_simulationIgnoreIndex.Contains(i))
-    //             Gizmos.color = Color.white;
-    //         else
-    //             Gizmos.color = Color.blue;
+    //         
+    //         Gizmos.color = Color.blue;
     //         Gizmos.DrawLine(m_VerletNodes[i].Position, m_VerletNodes[i].PrevoiusPosition);
     //     }
     // }
