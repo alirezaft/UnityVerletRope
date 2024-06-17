@@ -26,11 +26,11 @@ The first is the `Verlet Rope` component. It has some fields:
 
 ![Verlet Rope Component](./VerletRope.png)
 * **Rope Length:** The length of the rope.
-* **Number of Nodes per Length:** How many nodes are on 1 unit of length of the rope. the more the nodes are, the more accurate the simualtion is, but also computationally heavier.
+* **Number of Nodes:** How many nodes the rope consists of. the more the nodes are, the more accurate the simualtion is, but it will be computationally heavier.
 * **Constraint Iteration Count:** How many times the constraints are applied in each timestep. The more the iterations, the stiffer the rope becomes.
 * **Gravity:** The gravity vector.
 * **Rope Radius:** The radius of the rope.
-* **Substeps:** The number of iterations simulation is run in each timestep. Improves accuracy.
+* **Substeps:** Each fixed delta time is divided into smaller time steps called substeps for better accuracy. This field sets the number of substeps. 
 
 The other component is the `Rope Renderer`. It has only one field:
 
