@@ -449,7 +449,7 @@ Transform:
   m_GameObject: {fileID: 744599661}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -2, y: -1.3668909, z: 0.58244056}
+  m_LocalPosition: {x: -0.236, y: -1.3668909, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -561,7 +561,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1644046959965677927, guid: 73e8f23d7d9cc1f49973d2e18f3e262b, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0.02
+      value: -1.551
       objectReference: {fileID: 0}
     - target: {fileID: 1644046959965677927, guid: 73e8f23d7d9cc1f49973d2e18f3e262b, type: 3}
       propertyPath: m_LocalPosition.y
@@ -598,6 +598,14 @@ PrefabInstance:
     - target: {fileID: 1644046959965677927, guid: 73e8f23d7d9cc1f49973d2e18f3e262b, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6488651178797480579, guid: 73e8f23d7d9cc1f49973d2e18f3e262b, type: 3}
+      propertyPath: m_RopeLength
+      value: 4.55
+      objectReference: {fileID: 0}
+    - target: {fileID: 6488651178797480579, guid: 73e8f23d7d9cc1f49973d2e18f3e262b, type: 3}
+      propertyPath: m_NumberOfNodes
+      value: 20
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
