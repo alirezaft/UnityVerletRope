@@ -38,4 +38,5 @@ The other component is the `Rope Renderer`. It has only one field:
 
 * **Rope Segment Sides:** The number of sides the rope will have when the 3D mesh is rendered.
 ---
-You can read the detailed breakdown of this implementation [here](https://alirezaft98.medium.com/verlet-integration-simulating-rope-physics-in-unity-b4f0ffde38fb). I will write about how this rope is rendered in my next artcile so make sure to follow me.
+You can read the detailed breakdown of this implementation [here](https://alirezaft98.medium.com/verlet-integration-simulating-rope-physics-in-unity-b4f0ffde38fb) and you can read about how the rope is rendered [here](https://alirezaft98.medium.com/verlet-integration-rendering-the-rope-97dae2832dce).
+
